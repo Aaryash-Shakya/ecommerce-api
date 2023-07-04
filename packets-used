@@ -1,0 +1,5 @@
+express
+nodemon - server restarts automatically on change
+dotenv - to setup environment
+router
+morgan
