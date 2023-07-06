@@ -20,6 +20,7 @@ exports.postProduct = async (req, res) => {
 // to show all product
 exports.showProduct = async (req, res) => {
     const product = await Product.find()
+    .populate('category')
     if (!product) {
         return res.status(400).json({ error: "something went wrong" })
     }
@@ -29,6 +30,7 @@ exports.showProduct = async (req, res) => {
 // to show one product
 exports.productDetails = async (req, res) => {
     const product = await Product.findById(req.params.pid)
+    .populate('category')
     if (!product) {
         return res.status(400).json({ error: "something went wrong" })
     }
@@ -50,4 +52,26 @@ exports.deleteProduct = (req, res) => {
         .catch(err => {
             return res.status(400).json({ error: err })
         })
+}
+
+// to update product
+exports.updateProduct = async(req,res)=>{
+    const product= await Product.findByIdAndUpdate(
+        req.params.pid,
+        {
+            productName:req.body.productName,
+            productPrice: req.body.productPrice,
+            countInStock: req.body.countInStock,
+            productDescription: req.body.productDescription,
+            productImage: req.body.productImage,
+            category: req.body.category
+        },
+        {
+            new:true
+        }
+    )
+    if(!product){
+        return res.status(400).json({error: 'something went wrong'})
+    }
+    res.send(product)
 }
