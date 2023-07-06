@@ -3,3 +3,4 @@ nodemon - server restarts automatically on change
 dotenv - to setup environment
 router
 morgan
+gutter - to upload image
