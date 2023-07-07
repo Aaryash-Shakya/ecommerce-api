@@ -4,3 +4,4 @@ dotenv - to setup environment
 router
 morgan
 multer - to upload image/file
+express-validator - 
