@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true
     },
     role: {
         type: String,
@@ -48,16 +49,16 @@ userSchema.methods = {
     encryptPassword: function (password) {
         if (!password)
             return ''
-        try{
+        try {
             return crypto
-            .createHmac('sha1',this.salt)
-            .update(password)
-            .digest('hex')
+                .createHmac('sha1', this.salt)
+                .update(password)
+                .digest('hex')
         }
-        catch(err){
+        catch (err) {
             return err
         }
     }
 }
 
-module.exports = mongoose.model('User',userSchema)
+module.exports = mongoose.model('User', userSchema)

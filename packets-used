@@ -6,3 +6,4 @@ morgan
 multer - to upload image/file
 express-validator - 
 uuidv1 - to generate random string
+nodemailer 
