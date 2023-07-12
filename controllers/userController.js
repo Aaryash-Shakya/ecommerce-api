@@ -85,7 +85,8 @@ exports.postEmailConfiguration = (req, res) => {
                     return res.status(400).json({ error: err })
                 })
         })
-        .catch(err => {F
+        .catch(err => {
+            F
             return res.status(400).json({ error: err })
         })
 }
@@ -109,11 +110,77 @@ exports.signIn = async (req, res) => {
         return res.status(400).json({ error: 'Please verify your email being logging in' })
     }
     // now generate token using user id and jwt secret
-    const token = jwt.sign({_id:user._id},process.env.JWT_SECRET)
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET)
     // store token in the cookie
-    res.cookie('myCookie',token,{expire:Date.now()+999999})
+    res.cookie('myCookie', token, { expire: Date.now() + 999999 })
     // return user information to frontend
-    const {_id,name,role} = user
-    return res.json({token,user:{_id,name,email,role}})
+    const { _id, name, role } = user
+    return res.json({ token, user: { _id, name, email, role } })
+}
 
+// forget password
+exports.forgetPassword = async (req, res) => {
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) {
+        return res.status(403).json({ error: 'email has not been registered' })
+    }
+    let token = new Token({
+        userId: user._id,
+        token: crypto.randomBytes(16).toString('hex')
+    })
+    token = await token.save()
+    if (!token) {
+        return res.status(400).json({ error: 'failed to create the token, process terminated' })
+    }
+    // sendEmail
+    sendEmail({
+        from: 'no-reply@ecommercestore.com',
+        to: user.email,
+        subject: 'Password Reset Link',
+        text: `Hello\nPlease reset your password by clicking the link below\n\nhttp://${req.headers.host}/api/resetpassword/${token.token}`,
+        html: `<a href="http://${req.headers.host}/api/resetpassword/${token.token}">Click to Verify</a>`
+    })
+    res.json({ message: 'password reset link has been sent to you email' })
+}
+// reset password
+exports.resetPassword = async (req, res) => {
+    // find valid or matching token
+    const token = await Token.findOne({ token: req.params.token })
+    if (!token) {
+        return res.status(403).json({ error: 'invalid token or token may have expired' })
+    }
+    // if token is found then find the 
+    let user = await User.findOne({ _id: token.userId })
+    if (!user) {
+        return res.status(403).json({ error: 'We are unable to find a valid user for this token' })
+    }
+    // new password set and save
+    user.password = req.body.password
+    user = await user.save()
+    if (!user) {
+        return res.status(500).json({ error: 'failed to reset password' })
+    }
+    res.json({message: 'password updated successfully'})
+}
+
+// user listStyle: 
+exports.userList = async(req,res)=>{
+    const user = await User.find()
+    .select('-hashedPassword')
+    .select('-salt')
+    if(!user){
+        return res.status(403).json({error: 'something went wrong'})
+    }
+    res.send(user)
+}
+
+// user details
+exports.userDetails = async (req,res) =>{
+    const user = await User.findById(req.params.uid)
+    .select('-hashedPassword')
+    .select('-salt')
+    if(!user){
+        return res.status(403).json({error: 'something went wrong'})
+    }
+    res.send(user)
 }
