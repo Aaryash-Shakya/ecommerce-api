@@ -17,6 +17,30 @@ exports.productValidation = [
     .isLength({min:20}).withMessage('product name must be longer than 20 characters'),
 ]
 
+exports.userValidation = [
+    check('name','name is required').notEmpty()
+    .isLength({min:3}).withMessage('name must have 3 characters or more'),
+    check('email','email is required').notEmpty()
+    .isEmail().withMessage('Invalid email format'),
+    check('password','password is required').notEmpty()
+    .matches(/[a-z]/).withMessage('password must contain at least one lowercase letter')
+    .matches(/[A-Z]/).withMessage('password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('password must contain at least one number')
+    .matches(/[@#$^&-+=()]/).withMessage('password must contain at least one special character')
+    .isLength({min:8}).withMessage('password must be at least 8 characters long')
+    .isLength({max: 32}).withMessage('password cannot be longer than 32 characters')
+]
+
+exports.passwordValidation = [
+    check('password','password is required').notEmpty()
+    .matches(/[a-z]/).withMessage('password must contain at least one lowercase letter')
+    .matches(/[A-Z]/).withMessage('password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('password must contain at least one numerical digit')
+    .matches(/[@#$^&-+=()]/).withMessage('password must contain at least one special character')
+    .isLength({min:8}).withMessage('password must be at least 8 characters long')
+    .isLength({max: 32}).withMessage('password cannot be longer than 32 characters')
+]
+
 exports.validation = (req,res,next) =>{
     const errors = validationResult(req)
     if(errors.isEmpty()){

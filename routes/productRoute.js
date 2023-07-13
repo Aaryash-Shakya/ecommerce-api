@@ -3,12 +3,13 @@ const { postProduct, showProduct, productDetails, deleteProduct, updateProduct }
 const router = express.Router()
 const upload = require('../middleware/fileUpload')
 const { productValidation, validation } = require('../validation/validator')
+const { requireAdmin } = require('../controllers/userController')
 
-router.post('/postproduct',upload.single('productImage'),productValidation,validation,postProduct)
-router.get('/showproduct',showProduct)
-router.get('/productdetails/:pid',productDetails)
-router.delete('/deleteproduct/:pid',deleteProduct)
-router.put('/updateproduct/:pid',upload.single('productImage'),productValidation,validation,updateProduct)
+router.post('/postproduct', upload.single('productImage'), productValidation, validation, postProduct)
+router.get('/showproduct', requireAdmin, showProduct)
+router.get('/productdetails/:pid', productDetails)
+router.delete('/deleteproduct/:pid', deleteProduct)
+router.put('/updateproduct/:pid', upload.single('productImage'), productValidation, validation, updateProduct)
 
 
-module.exports=router
+module.exports = router

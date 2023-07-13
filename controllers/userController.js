@@ -2,7 +2,8 @@ const User = require('../models/userModel')
 const Token = require('../models/tokenModel')
 const crypto = require('crypto')
 const sendEmail = require('../utils/setEmail')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken') // authorization
+const { expressjwt } = require("express-jwt") // authentication
 
 // to post user
 exports.postUser = async (req, res) => {
@@ -147,12 +148,12 @@ exports.resetPassword = async (req, res) => {
     // find valid or matching token
     const token = await Token.findOne({ token: req.params.token })
     if (!token) {
-        return res.status(403).json({ error: 'invalid token or token may have expired' })
+        return res.status(404).json({ error: 'invalid token or token may have expired' })
     }
     // if token is found then find the 
     let user = await User.findOne({ _id: token.userId })
     if (!user) {
-        return res.status(403).json({ error: 'We are unable to find a valid user for this token' })
+        return res.status(404).json({ error: 'We are unable to find a valid user for this token' })
     }
     // new password set and save
     user.password = req.body.password
@@ -160,27 +161,57 @@ exports.resetPassword = async (req, res) => {
     if (!user) {
         return res.status(500).json({ error: 'failed to reset password' })
     }
-    res.json({message: 'password updated successfully'})
+    res.json({ message: 'password updated successfully' })
 }
 
 // user listStyle: 
-exports.userList = async(req,res)=>{
+exports.userList = async (req, res) => {
     const user = await User.find()
-    .select('-hashedPassword')
-    .select('-salt')
-    if(!user){
-        return res.status(403).json({error: 'something went wrong'})
+        .select('-hashedPassword')
+        .select('-salt')
+    if (!user) {
+        return res.status(404).json({ error: 'something went wrong' })
     }
     res.send(user)
 }
 
 // user details
-exports.userDetails = async (req,res) =>{
+exports.userDetails = async (req, res) => {
     const user = await User.findById(req.params.uid)
-    .select('-hashedPassword')
-    .select('-salt')
-    if(!user){
-        return res.status(403).json({error: 'something went wrong'})
+        .select('-hashedPassword')
+        .select('-salt')
+    if (!user) {
+        return res.status(404).json({ error: 'something went wrong' })
     }
     res.send(user)
+}
+
+// admin middleware
+exports.requireAdmin = (req, res) => {
+    // verify jwt
+    expressjwt(
+        {
+            secret: process.env.JWT_SECRET,
+            algorithms: ["HS256"]
+        })
+        (req, res, (err) => {
+            if (err) {
+                return res.status(401).json({ error: 'unauthorized access' })
+            }
+            // check for user role
+            // const tempval = req.auth.role
+            // return res.status(410).json({specialmsg: tempval,second:'1234'})
+            if (req.auth.role === 0) {
+                next()
+            }
+            else {
+                return res.status(403).json({ error: 'you are not authorized to access this page' })
+            }
+        })
+}
+
+// sign out
+exports.signOut = (req,res)=>{
+    res.clearCookie('myCookie')
+    res.json({message:'signout success'})
 }
