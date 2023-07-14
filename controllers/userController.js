@@ -200,7 +200,7 @@ exports.requireAdmin = (req, res) => {
             }
             // check for user role
             // const tempval = req.auth.role
-            // return res.status(410).json({specialmsg: tempval,second:'1234'})
+            // return res.status(410).json({specialmsg: tempval, second:'1234'})
             if (req.auth.role === 0) {
                 next()
             }

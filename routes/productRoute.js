@@ -6,7 +6,7 @@ const { productValidation, validation } = require('../validation/validator')
 const { requireAdmin } = require('../controllers/userController')
 
 router.post('/postproduct', upload.single('productImage'), productValidation, validation, postProduct)
-router.get('/showproduct', requireAdmin, showProduct)
+router.get('/showproduct', showProduct)
 router.get('/productdetails/:pid', productDetails)
 router.delete('/deleteproduct/:pid', deleteProduct)
 router.put('/updateproduct/:pid', upload.single('productImage'), productValidation, validation, updateProduct)
