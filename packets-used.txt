@@ -9,3 +9,4 @@ uuidv1 - to generate random string
 nodemailer 
 jsonwebtoken - for authentication
 express-jwt - 
+cors - cross object resource sharing

@@ -111,7 +111,7 @@ exports.signIn = async (req, res) => {
         return res.status(400).json({ error: 'Please verify your email being logging in' })
     }
     // now generate token using user id and jwt secret
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET)
+    const token = jwt.sign({ _id: user._id, role:user.role }, process.env.JWT_SECRET)
     // store token in the cookie
     res.cookie('myCookie', token, { expire: Date.now() + 999999 })
     // return user information to frontend
@@ -192,7 +192,8 @@ exports.requireAdmin = (req, res) => {
     expressjwt(
         {
             secret: process.env.JWT_SECRET,
-            algorithms: ["HS256"]
+            algorithms: ["HS256"],
+            userProperty: 'auth'
         })
         (req, res, (err) => {
             if (err) {
@@ -201,6 +202,37 @@ exports.requireAdmin = (req, res) => {
             // check for user role
             // const tempval = req.auth.role
             // return res.status(410).json({specialmsg: tempval, second:'1234'})
+            if (req.auth.role === 1) {
+                next()
+            }
+            else {
+                return res.status(403).json({ error: 'you are not authorized to access this page' })
+            }
+        })
+    // , function (req, res) {
+    //     if (req.auth.role == 0)
+    //         return res.status(401).json({ error: 'unauthorized access' })
+    //     else if (req.auth.role == 1)
+    //         next()
+    //     else {
+    //         return res.status(403).json({ error: 'you are not authorized to access this page' })
+    //     }
+    // }
+}
+
+// user middleware
+exports.requireUser = (req, res) => {
+    // verify jwt
+    expressjwt(
+        {
+            secret: process.env.JWT_SECRET,
+            algorithms: ["HS256"],
+            userProperty: 'auth'
+        })
+        (req, res, (err) => {
+            if (err) {
+                return res.status(401).json({ error: 'unauthorized access' })
+            }
             if (req.auth.role === 0) {
                 next()
             }
@@ -211,7 +243,7 @@ exports.requireAdmin = (req, res) => {
 }
 
 // sign out
-exports.signOut = (req,res)=>{
+exports.signOut = (req, res) => {
     res.clearCookie('myCookie')
-    res.json({message:'signout success'})
+    res.json({ message: 'signout success' })
 }

@@ -4,6 +4,7 @@ require('dotenv').config()
 require('./db/connection')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const testRoute = require('./routes/testRoute')
 const categoryRoute = require('./routes/categoryRoute')
@@ -19,6 +20,7 @@ const orderRoute = require('./routes/orderRoute')
 app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use('/public/uploads',express.static('public/uploads'))
+app.use(cors())
 
 // routes middleware - check if we can let the req proceed forward or not
 app.use('/api',testRoute)

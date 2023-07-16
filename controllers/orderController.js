@@ -14,12 +14,12 @@ exports.postOrder = async (req, res) => {
     }))
     const orderItemIdResolved = await orderItemIds
     // calculate total price
-    const totalAmount =await Promise.all(orderItemIdResolved.map(async orderId=>{
-        const itemOrder = await OrderItem.findById(orderId).populate('product','productPrice')
+    const totalAmount = await Promise.all(orderItemIdResolved.map(async orderId => {
+        const itemOrder = await OrderItem.findById(orderId).populate('product', 'productPrice')
         const total = itemOrder.quantity * itemOrder.product.productPrice
         return total
     }))
-    const totalPrice = totalAmount.reduce((acc,currentVal)=>acc+currentVal,0) // initial acc val = 0
+    const totalPrice = totalAmount.reduce((acc, currentVal) => acc + currentVal, 0) // initial acc val = 0
 
     // post data to order model
     let order = new Order({
@@ -34,8 +34,62 @@ exports.postOrder = async (req, res) => {
         user: req.body.user
     })
     order = await order.save()
-    if(!order){
-        return res.status(400).json({error: 'something went wrong'})
+    if (!order) {
+        return res.status(400).json({ error: 'something went wrong' })
+    }
+    res.send(order)
+}
+
+// order list
+exports.orderList = async (req, res) => {
+    const order = await Order.find()
+        .populate('user', 'name')
+        .sort({ createdAt: -1 })
+    if (!order) {
+        return res.status(400).json({ error: 'something went wrong' })
+    }
+    res.send(order)
+}
+
+// order details
+exports.orderDetails = async (req, res) => {
+    const order = await Order.findById(req.params.id)
+        .populate('user', 'name')
+        .populate({
+            path: 'orderItems', populate: {
+                path: 'product', populate: 'category'
+            }
+        })
+    if (!order) {
+        return res.status(400).json({ error: 'something went wrong' })
+    }
+    res.send(order)
+}
+
+// update status
+exports.updateStatus = async (req, res) => {
+    const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+    )
+    if (!order) {
+        return res.status(400).json({ error: 'something went wrong' })
+    }
+    res.send(order)
+}
+
+// order list of specific user
+exports.userOrderList = async (req, res) => {
+    const order = await Order.find({ user: req.params.userid })
+        .populate({
+            path: 'orderItems', populate: {
+                path: 'product', populate: 'category'
+            }
+        })
+        .sort({ createdAt: -1 })
+    if (!order) {
+        return res.status(400).json({ error: 'something went wrong' })
     }
     res.send(order)
 }
