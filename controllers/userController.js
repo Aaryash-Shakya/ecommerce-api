@@ -32,14 +32,17 @@ exports.postUser = async (req, res) => {
                 if (!token) {
                     return res.status(400).json({ error: 'failed to create token' })
                 }
-
+                const url = process.env.FRONTEND_URL + '\/email\/confirmation\/' + token.token
                 // send email
                 sendEmail({
                     from: 'no-reply@ecommercestore.com',
                     to: user.email,
                     subject: 'Email Verification',
-                    text: `Hello\nPlease verify your email by clicking the link below\n\nhttp://${req.headers.host}/api/confirmation/${token.token}`,
-                    html: `<a href="http://${req.headers.host}/api/confirmation/${token.token}">Click to Verify</a>`
+                    text: `Hello\nPlease verify your email by clicking the link below\n\n
+                    http://${req.headers.host}/api/confirmation/${token.token}`,
+                    html: `
+                    <h1>Verify your email</h1>
+                    <a href='${url}'>Click to Verify</a>`
                 })
                 res.send(user)
             }
@@ -87,7 +90,6 @@ exports.postEmailConfiguration = (req, res) => {
                 })
         })
         .catch(err => {
-            F
             return res.status(400).json({ error: err })
         })
 }
@@ -134,12 +136,15 @@ exports.forgetPassword = async (req, res) => {
         return res.status(400).json({ error: 'failed to create the token, process terminated' })
     }
     // sendEmail
+    const url = process.env.FRONTEND_URL+'\/reset\/password\/'+token.token
     sendEmail({
         from: 'no-reply@ecommercestore.com',
         to: user.email,
         subject: 'Password Reset Link',
         text: `Hello\nPlease reset your password by clicking the link below\n\nhttp://${req.headers.host}/api/resetpassword/${token.token}`,
-        html: `<a href="http://${req.headers.host}/api/resetpassword/${token.token}">Click to Verify</a>`
+        html: `
+        <h1>Reset your password</h1>
+        <a href='${url}'>Click to reset your password</a>`
     })
     res.json({ message: 'password reset link has been sent to you email' })
 }
@@ -187,7 +192,7 @@ exports.userDetails = async (req, res) => {
 }
 
 // admin middleware
-exports.requireAdmin = (req, res) => {
+exports.requireAdmin = (req, res, next) => {
     // verify jwt
     expressjwt(
         {

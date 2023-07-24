@@ -20,7 +20,7 @@ exports.postProduct = async (req, res) => {
 // to show all product
 exports.showProduct = async (req, res) => {
     const product = await Product.find()
-        .populate('category')
+        .populate('category','category_name')
     if (!product) {
         return res.status(400).json({ error: "something went wrong" })
     }
