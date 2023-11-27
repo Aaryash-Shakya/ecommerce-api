@@ -2,11 +2,11 @@
 
 Welcome to the my E-commerce API, a complete backend service for an e-commerce system. This API provides a robust platform for handling users, products, categories, orders, tokens and payment. Whether you're a restaurant owner or a developer looking to integrate food delivery functionality into your application, this API is a great starting point.
 
-## [click me to check out the FRONTEND_PROJECT](https://github.com/Aaryash-Shakya/ecommerce-website-react) **
+## [click me to check out the FRONTEND_PROJECT](https://github.com/Aaryash-Shakya/ecommerce-website-react)
 
 ## <img src="https://cdn.iconscout.com/icon/free/png-256/free-layers-94-675757.png?f=webp" height=32 width=32> Tech Stack
 
-- <img src="https://img.shields.io/badge/-JavaScript-555?logo=typescript" height=30> 
+- <img src="https://img.shields.io/badge/-JavaScript-555?logo=javascript" height=30> 
 - <img src="https://img.shields.io/badge/-Node.js-555?logo=node.js" height=30> 
 - <img src="https://img.shields.io/badge/-Express-555?logo=express" height=30> 
 - <img src="https://img.shields.io/badge/-MongoDB-555?logo=mongodb" height=30> 
