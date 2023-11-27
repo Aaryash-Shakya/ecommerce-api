@@ -11,6 +11,7 @@ const categoryRoute = require('./routes/categoryRoute')
 const productRoute = require('./routes/productRoute')
 const userRoute = require('./routes/userRoute')
 const orderRoute = require('./routes/orderRoute')
+const paymentRoute = require('./routes/paymentRoute')
 
 // app.get('/',(req,res)=>{
 //     res.send('Welcome to node js')
@@ -28,6 +29,7 @@ app.use('/api',categoryRoute)
 app.use('/api',productRoute)
 app.use('/api',userRoute)
 app.use('/api',orderRoute)
+app.use('/api',paymentRoute)
 
 const port =  process.env.PORT || 5000
 app.listen(port,()=>{

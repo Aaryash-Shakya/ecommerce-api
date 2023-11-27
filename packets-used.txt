@@ -10,3 +10,5 @@ nodemailer
 jsonwebtoken - for authentication
 express-jwt - 
 cors - cross object resource sharing
+stripe - for payment integration using stripe
+countries-list - list of all country for shipping address

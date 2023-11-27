@@ -226,7 +226,7 @@ exports.requireAdmin = (req, res, next) => {
 }
 
 // user middleware
-exports.requireUser = (req, res) => {
+exports.requireUser = (req, res, next) => {
     // verify jwt
     expressjwt(
         {
